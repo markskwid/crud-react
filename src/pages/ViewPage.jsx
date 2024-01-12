@@ -1,23 +1,31 @@
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { CustomerContext } from "../store/CustomerStore";
+import { useSelector } from "react-redux";
 import {
 	formatNumber,
 	transactions,
 	formatCurrency,
 	totalNumber,
 } from "../util/util";
+import { getUser } from "../util/apiUtil";
 export default function ViewPage() {
-	const [user, setUser] = useState([]);
-	const { items } = useContext(CustomerContext);
+	const [user, setUser] = useState({});
 	const userId = useParams();
 
 	useEffect(() => {
-		if (items.length > 0) {
-			const userData = items.filter((customer) => customer.id === userId.id);
-			setUser(userData);
+		const getUserData = async (id) => {
+			try {
+				const response = await getUser(id);
+				setUser(response);
+			} catch (error) {
+				console.log(error);
+			}
+		};
+
+		if (userId) {
+			getUserData(userId.id);
 		}
-	}, [userId.id, items]);
+	}, [userId]);
 
 	return (
 		<div className="w-full drop-shadow-lg">
@@ -34,17 +42,17 @@ export default function ViewPage() {
 				<div className="container-name flex flex-col lg:flex-row justify-between items-start lg:items-center text-slate-800">
 					<p className="font-bold text-base mt-2 lg:mt-0">
 						<span className="block text-xs text-slate-500">First Name</span>
-						{user.length > 0 && user[0].name.split(" ")[0]}
+						{user && user.name && user.name.split(" ")[0]}
 					</p>
 
 					<p className="font-bold text-base mt-2 lg:mt-0">
 						<span className="block text-xs text-slate-500">Email Address</span>
-						{user.length > 0 && user[0].email}
+						{user && user.email}
 					</p>
 
 					<p className="font-bold text-base mt-2 lg:mt-0">
 						<span className="block text-xs text-slate-500">Contact Number</span>
-						{user.length > 0 && formatNumber(user[0].phone)}
+						{user && user.phone && formatNumber(user.phone)}
 					</p>
 				</div>
 

@@ -1,23 +1,22 @@
 import { useContext, useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { modalActions } from "../store/modal.slice";
 import { CustomerContext } from "../store/CustomerStore";
 import GridContainer from "../components/GridContainer";
 import Toast from "../components/Toast";
 import Modal from "../components/Modal";
 import TableContainer from "../components/TableContainer";
 import Button from "../components/Button";
+import { deleteUserInfo } from "../store/customer.actions";
 
 export default function IndexPage() {
-	const {
-		items,
-		isLoading,
-		isAddingSuccess,
-		handleDeleteUser,
-		isEditingSuccess,
-		error,
-	} = useContext(CustomerContext);
+	const dispatch = useDispatch();
+	const isVisible = useSelector((state) => state.modal);
+	const items = useSelector((state) => state.customer.items);
+	const { isLoading, isAddingSuccess, isEditingSuccess, error } =
+		useContext(CustomerContext);
 	const [showToast, setShowToast] = useState(false);
 	const [tableStyle, setTableStyle] = useState(false);
-	const [isVisible, setIsVisible] = useState(false);
 	const [editInfo, setEditInfo] = useState({});
 
 	useEffect(() => {
@@ -35,15 +34,21 @@ export default function IndexPage() {
 		setTableStyle((prev) => !prev);
 	};
 
-	const openModal = () => setIsVisible(true);
+	const openModal = () => {
+		dispatch(modalActions.open());
+	};
 	const closeModal = () => {
-		setIsVisible(false);
+		dispatch(modalActions.close());
 		setEditInfo({});
 	};
 
 	const handleEditCustomer = (data) => {
 		setEditInfo(data);
 		openModal();
+	};
+
+	const handleDeleteUser = (id) => {
+		dispatch(deleteUserInfo(id));
 	};
 
 	const getButtonStyle = (isActive) =>

@@ -1,16 +1,10 @@
 {
   "users": [
     {
-      "id": "fb7c326e-ce75-4928-b0f9-cd44a46cb627",
-      "name": "Mark Ponce Bascal",
-      "email": "bascal.markponce.f.1015@gmail.com",
-      "phone": "09503598634"
-    },
-    {
-      "id": "1184f440-e183-457f-94cb-74d0124207dc",
-      "name": "Mejelle De Belen",
-      "email": "mejee@gmail.com",
-      "phone": "09503598634"
+      "id": "e6158a04-e2cd-4cc6-82ac-9579740e8f50",
+      "name": "Juan Dela Cruze",
+      "email": "juan.dc@gmail.com",
+      "phone": "09403598633"
     }
   ]
 }

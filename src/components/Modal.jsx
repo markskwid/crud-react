@@ -2,6 +2,8 @@ import { useContext, useEffect, useState } from "react";
 import { CustomerContext } from "../store/CustomerStore";
 import { v4 as generateId } from "uuid";
 import Button from "./Button";
+import { useSelector, useDispatch } from "react-redux";
+import { addCustomerInfo, updateUserInfo } from "../store/customer.actions";
 import { formatName } from "../util/util";
 import {
 	isNameValid,
@@ -11,8 +13,8 @@ import {
 } from "../util/validation";
 
 export default function Modal({ isOpen, editInfo, closeModal }) {
-	const { handleAddCustomer, handleEditUser, items } =
-		useContext(CustomerContext);
+	const dispatch = useDispatch();
+	const customers = useSelector((state) => state.customer);
 
 	const [error, setError] = useState({
 		name: false,
@@ -63,7 +65,11 @@ export default function Modal({ isOpen, editInfo, closeModal }) {
 		const errors = {
 			name: information.name.trim() === "" || isNameValid(information.name),
 			email: information.email.trim() === "" || isEmailValid(information.email),
-			duplicateEmail: isDuplicate(information.email, editInfo?.email, items),
+			duplicateEmail: isDuplicate(
+				information.email,
+				editInfo?.email,
+				customers.items
+			),
 			phone: information.phone.trim() === "" || isPhoneValid(information.phone),
 		};
 
@@ -75,21 +81,19 @@ export default function Modal({ isOpen, editInfo, closeModal }) {
 		e.preventDefault();
 		if (!validateForm()) {
 			//check if edit info have value so it will go to different end point
+			const updateName = {
+				...information,
+				name: formatName(information.name),
+			};
 			if (editInfo.name && editInfo.id && editInfo.email && editInfo.phone) {
-				handleEditUser({
-					...information,
-					name: formatName(information.name),
-				});
-				closeThisModal();
+				dispatch(updateUserInfo(updateName));
 			} else {
 				//add endpoint
-				handleAddCustomer({
-					...information,
-					name: formatName(information.name),
-				});
-				closeThisModal();
+				dispatch(addCustomerInfo(updateName));
 			}
 		}
+
+		closeThisModal();
 	};
 
 	const getInputClassName = (errorCondition) => {
