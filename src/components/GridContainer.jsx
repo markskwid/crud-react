@@ -29,13 +29,13 @@ export default function GridContainer({ items, onEdit, onDelete, isLoading }) {
 
 							<Link
 								to={`/view-customer/${customer.id}`}
-								className="font-semibold text-lg underline"
+								className="font-semibold text-lg underline xl:text-lg"
 							>
 								{customer.name}
 							</Link>
 
-							<p className="text-slate-600 my-2 text-sm">{customer.email}</p>
-							<p className="text-slate-600 text-sm">
+							<p className="text-slate-600 my-2 text-sm xl:text-lg">{customer.email}</p>
+							<p className="text-slate-600 text-sm xl:text-lg">
 								{formatNumber(customer.phone)}
 							</p>
 						</li>

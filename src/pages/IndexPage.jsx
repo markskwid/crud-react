@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { modalActions } from "../store/modal.slice";
+import { uiActions } from "../store/modal.slice";
 import { CustomerContext } from "../store/CustomerStore";
 import GridContainer from "../components/GridContainer";
 import Toast from "../components/Toast";
@@ -11,16 +11,20 @@ import { deleteUserInfo } from "../store/customer.actions";
 
 export default function IndexPage() {
 	const dispatch = useDispatch();
-	const isVisible = useSelector((state) => state.modal);
+	const isVisible = useSelector((state) => state.userInterface);
 	const items = useSelector((state) => state.customer.items);
-	const { isLoading, isAddingSuccess, isEditingSuccess, error } =
+	const status = useSelector((state) => state.customer)
+	const isDeletingSuccess = useSelector(state => state.customer.isDeletingSuccess)
+	const { isLoading } =
 		useContext(CustomerContext);
 	const [showToast, setShowToast] = useState(false);
 	const [tableStyle, setTableStyle] = useState(false);
 	const [editInfo, setEditInfo] = useState({});
 
 	useEffect(() => {
-		if (isAddingSuccess || isEditingSuccess || error) {
+		
+		if (status.isAddingSuccess || status.isEditingSuccess || status.isDeletingSuccess || status.error) {
+			
 			setShowToast(true);
 			const timeoutId = setTimeout(() => {
 				setShowToast(false);
@@ -28,17 +32,17 @@ export default function IndexPage() {
 
 			return () => clearTimeout(timeoutId);
 		}
-	}, [isAddingSuccess, isEditingSuccess, error]);
+	}, [status.isAddingSuccess, status.isEditingSuccess, status.error]);
 
 	const changeDisplayStyle = () => {
 		setTableStyle((prev) => !prev);
 	};
 
 	const openModal = () => {
-		dispatch(modalActions.open());
+		dispatch(uiActions.open());
 	};
 	const closeModal = () => {
-		dispatch(modalActions.close());
+		dispatch(uiActions.close());
 		setEditInfo({});
 	};
 
@@ -78,13 +82,13 @@ export default function IndexPage() {
 
 				<div className="w-full text-end flex justify-end items-center mt-2">
 					<button className="mr-2" onClick={changeDisplayStyle}>
-						<span className={getButtonStyle(!tableStyle)}>
+						<span className={getButtonStyle(tableStyle)}>
 							<ion-icon name="grid-sharp"></ion-icon>
 						</span>
 					</button>
 
 					<button onClick={changeDisplayStyle}>
-						<span className={getButtonStyle(tableStyle)}>
+						<span className={getButtonStyle(!tableStyle)}>
 							<ion-icon name="menu-sharp"></ion-icon>
 						</span>
 					</button>
@@ -115,15 +119,15 @@ export default function IndexPage() {
 
 				{showToast && (
 					<Toast
-						isError={error ? true : false}
-						icon={error ? "alert-circle-sharp" : "checkmark-sharp"}
-						message={
-							isAddingSuccess
+						isError={status.error ? true : false}
+						icon={status.error ? "alert-circle-sharp" : "checkmark-sharp"}
+						message={ status.isDeletingSuccess ? "Successfully deleted a data" :
+							status.isAddingSuccess
 								? "Successfully adding customer"
-								: isEditingSuccess
+								: status.isEditingSuccess
 								? "Changes saved!"
-								: error
-								? error
+								: status.error
+								? status.error
 								: null
 						}
 					/>
